@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Padan Penjodoh Bilangan Klasik - Pendekar Jebat</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Cinzel, MedievalSharp, & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=MedievalSharp&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            jebat: {
+              red: '#6b0000',
+              darkred: '#4a0000',
+              gold: '#d4af37',
+              lightgold: '#f9e076',
+              wood: '#2c1810',
+              darkwood: '#1a0d08',
+              parchment: '#f7f1e1',
+              parchmentDark: '#e3d4b5'
+            }
+          },
+          fontFamily: {
+            title: ['Cinzel', 'serif'],
+            klasik: ['MedievalSharp', 'cursive'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Texture and Pattern Backgrounds */
+    body {
+      background-color: #1a0d08;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(107, 0, 0, 0.4) 0%, rgba(26, 13, 8, 0.95) 100%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M30 30L15 0H0l30 60L60 0H45L30 30zM0 60h15l15-30 15 30h15L30 0 0 60z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Wooden Border Frame */
+    .wood-frame {
+      background: linear-gradient(145deg, #3a2016, #21110a);
+      border: 4px solid #d4af37;
+      box-shadow: 
+        0 0 0 2px #4a0000,
+        0 10px 25px rgba(0,0,0,0.8),
+        inset 0 0 15px rgba(0,0,0,0.6);
+      position: relative;
+    }
+
+    .wood-frame::before {
+      content: '';
+      position: absolute;
+      top: -8px; left: -8px; right: -8px; bottom: -8px;
+      border: 2px dashed #d4af37;
+      pointer-events: none;
+      border-radius: inherit;
+      opacity: 0.5;
+    }
+
+    /* Parchment Card Textures */
+    .parchment-bg {
+      background: #f7f1e1;
+      background-image: radial-gradient(circle, rgba(212,175,55,0.1) 0%, rgba(184,134,11,0.2) 100%);
+      box-shadow: inset 0 0 20px rgba(115, 77, 38, 0.3);
+    }
+
+    /* Golden Glow Effects */
+    .gold-glow {
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.6), 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    /* 3D Card Flip Perspective */
+    .card-container {
+      perspective: 1000px;
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .card-container.flipped .card-inner,
+    .card-container.matched .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-front {
+      background: linear-gradient(135deg, #4a0000 0%, #2b0000 100%);
+      border: 3px solid #d4af37;
+      box-shadow: inset 0 0 12px rgba(212, 175, 55, 0.4), 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      border: 3px solid #b8860b;
+    }
+
+    /* Matched Animation Glow */
+    .card-container.matched .card-back {
+      border-color: #2e7d32;
+      box-shadow: 0 0 15px rgba(46, 125, 50, 0.8), inset 0 0 10px rgba(46, 125, 50, 0.4);
+      animation: pulseMatch 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseMatch {
+      0% { transform: rotateY(180deg) scale(1); }
+      100% { transform: rotateY(180deg) scale(1.03); }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1a0d08;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d4af37;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="text-jebat-parchment font-sans min-h-screen flex flex-col items-center p-3 sm:p-6 select-none">
+
+  <!-- Main Container -->
+  <div class="max-w-5xl w-full flex flex-col items-center">
+    
+    <!-- Header Ala Jebat Klasik -->
+    <header class="w-full text-center mb-4 relative">
+      <div class="inline-block relative">
+        <div class="flex items-center justify-center gap-3 mb-1">
+          <!-- Left Keris SVG Icon -->
+          <svg class="w-8 h-8 sm:w-10 sm:h-10 text-jebat-gold filter drop-shadow" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7,2C7,2 9,5 9,7C9,9 7,11 7,13C7,15 9,17 9,19C9,20.5 8,22 8,22L10,22C10,22 12,20 12,18C12,16 10,14 10,12C10,10 12,8 12,6C12,4 10,2 10,2H7M13,2C13,2 15,5 15,7C15,9 13,11 13,13C13,15 15,17 15,19C15,20.5 14,22 14,22L16,22C16,22 18,20 18,18C18,16 16,14 16,12C16,10 18,8 18,6C18,4 16,2 16,2H13Z" />
+          </svg>
+          <h1 class="font-title font-black text-2xl sm:text-4xl lg:text-5xl text-jebat-gold gold-glow tracking-wider uppercase">
+            Pendekar Jebat
+          </h1>
+          <!-- Right Keris SVG Icon -->
+          <svg class="w-8 h-8 sm:w-10 sm:h-10 text-jebat-gold filter drop-shadow transform scale-x-[-1]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M7,2C7,2 9,5 9,7C9,9 7,11 7,13C7,15 9,17 9,19C9,20.5 8,22 8,22L10,22C10,22 12,20 12,18C12,16 10,14 10,12C10,10 12,8 12,6C12,4 10,2 10,2H7M13,2C13,2 15,5 15,7C15,9 13,11 13,13C13,15 15,17 15,19C15,20.5 14,22 14,22L16,22C16,22 18,20 18,18C18,16 16,14 16,12C16,10 18,8 18,6C18,4 16,2 16,2H13Z" />
+          </svg>
+        </div>
+        <p class="font-klasik text-lg sm:text-xl text-jebat-lightgold tracking-widest">
+          ~ Permainan Padanan Penjodoh Bilangan Melayu Klasik ~
+        </p>
+      </div>
+    </header>
+
+    <!-- Control Bar & Selection -->
+    <div class="wood-frame rounded-2xl p-4 w-full mb-6 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Grade Level Dropdown Selector -->
+      <div class="flex items-center gap-2">
+        <label for="gradeSelect" class="font-title text-sm sm:text-base text-jebat-lightgold flex items-center gap-2">
+          <i class="fa-solid font-bold fa-scroll text-jebat-gold"></i> Peringkat:
+        </label>
+        <select id="gradeSelect" onchange="changeGrade()" class="bg-jebat-darkwood text-jebat-gold font-bold border-2 border-jebat-gold rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-jebat-gold cursor-pointer text-sm sm:text-base">
+          <option value="1">Tahun 1 (Asas)</option>
+          <option value="2">Tahun 2 (Mudah)</option>
+          <option value="3">Tahun 3 (Sederhana)</option>
+          <option value="4">Tahun 4 (Pertengahan)</option>
+          <option value="5">Tahun 5 (Lanjutan)</option>
+          <option value="6">Tahun 6 (Pahlawan Klasik)</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Audio Speech Toggle -->
+        <button id="btnAudio" onclick="toggleAudio()" class="bg-jebat-red hover:bg-red-800 text-jebat-gold border border-jebat-gold px-3 py-1.5 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95 shadow-md">
+          <i id="audioIcon" class="fa-solid fa-volume-high"></i> <span id="audioText">Suara: ON</span>
+        </button>
+
+        <!-- Glossary Modal Button -->
+        <button onclick="openGlossary()" class="bg-amber-800 hover:bg-amber-700 text-jebat-lightgold border border-jebat-gold px-3 py-1.5 rounded-lg font-bold text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95 shadow-md">
+          <i class="fa-solid fa-book-bookmark"></i> Kamus
+        </button>
+
+        <!-- Reset Button -->
+        <button onclick="resetGame()" class="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-jebat-darkwood font-title font-bold border border-jebat-gold px-4 py-1.5 rounded-lg text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95 shadow-md">
+          <i class="fa-solid fa-rotate-right"></i> Mula Semula
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard Stats (Wooden Parchment Ribbon) -->
+    <div class="grid grid-cols-3 gap-3 sm:gap-6 w-full mb-6">
+      <!-- Moves Count -->
+      <div class="wood-frame rounded-xl p-2.5 text-center flex flex-col justify-center items-center">
+        <span class="text-xs sm:text-sm text-jebat-lightgold font-klasik uppercase tracking-wider">Langkah</span>
+        <span id="moveCount" class="text-xl sm:text-3xl font-title font-bold text-jebat-gold gold-glow">0</span>
+      </div>
+
+      <!-- Matched Score -->
+      <div class="wood-frame rounded-xl p-2.5 text-center flex flex-col justify-center items-center">
+        <span class="text-xs sm:text-sm text-jebat-lightgold font-klasik uppercase tracking-wider">Padanan</span>
+        <span id="matchScore" class="text-xl sm:text-3xl font-title font-bold text-emerald-400">0 / 6</span>
+      </div>
+
+      <!-- Timer -->
+      <div class="wood-frame rounded-xl p-2.5 text-center flex flex-col justify-center items-center">
+        <span class="text-xs sm:text-sm text-jebat-lightgold font-klasik uppercase tracking-wider">Masa</span>
+        <span id="timerDisplay" class="text-xl sm:text-3xl font-title font-bold text-amber-300">00:00</span>
+      </div>
+    </div>
+
+    <!-- Game Grid Area -->
+    <div class="w-full relative">
+      <div id="gameGrid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
+        <!-- Cards will be dynamically generated by JS -->
+      </div>
+    </div>
+
+    <!-- Instructions Banner -->
+    <footer class="mt-8 text-center text-xs sm:text-sm text-amber-200/70 font-klasik">
+      <p>⚔️ Petua Pendekar: Buka satu kad <span class="text-jebat-gold">Penjodoh Bilangan</span> dan padankan dengan <span class="text-jebat-gold">Objek / Benda</span> yang betul!</p>
+    </footer>
+  </div>
+
+  <!-- Victory Dialog / Modal Ala Watikah Istana -->
+  <div id="victoryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="wood-frame parchment-bg text-jebat-darkwood max-w-md w-full rounded-2xl p-6 sm:p-8 text-center relative animate-bounce-in shadow-2xl">
+      <!-- Decorative Header Crest -->
+      <div class="text-4xl sm:text-5xl mb-2">⚔️📜⚔️</div>
+      <h2 class="font-title text-2xl sm:text-3xl font-black text-jebat-red uppercase tracking-wide mb-1">
+        Watikah Kemenangan!
+      </h2>
+      <p class="font-klasik text-amber-900 text-base sm:text-lg mb-4">
+        "Syabas Pendekar! Kebijaksanaanmu Memang Tiada Tandingan!"
+      </p>
+
+      <!-- Stats Summary -->
+      <div class="bg-amber-100/80 border border-amber-800/30 rounded-xl p-4 mb-6 text-left space-y-2 text-sm sm:text-base font-semibold text-amber-950">
+        <div class="flex justify-between border-b border-amber-800/20 pb-1">
+          <span>Peringkat:</span>
+          <span id="modalGradeText" class="text-jebat-red font-bold">Tahun 1</span>
+        </div>
+        <div class="flex justify-between border-b border-amber-800/20 pb-1">
+          <span>Jumlah Pergerakan:</span>
+          <span id="modalMovesText" class="font-bold">0</span>
+        </div>
+        <div class="flex justify-between border-b border-amber-800/20 pb-1">
+          <span>Masa Diambil:</span>
+          <span id="modalTimeText" class="font-bold">00:00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Penarafan Pendekar:</span>
+          <span id="modalStarsText" class="text-amber-600">⭐⭐⭐</span>
+        </div>
+      </div>
+
+      <!-- Modal Action Buttons -->
+      <div class="flex gap-3 justify-center">
+        <button onclick="nextGrade()" class="bg-jebat-red hover:bg-red-900 text-jebat-gold font-title font-bold px-4 py-2.5 rounded-xl border border-jebat-gold text-sm transition active:scale-95 shadow-lg">
+          Tingkat Peringkat ➔
+        </button>
+        <button onclick="closeVictoryModal(); resetGame();" class="bg-amber-700 hover:bg-amber-800 text-white font-title font-bold px-4 py-2.5 rounded-xl border border-amber-900 text-sm transition active:scale-95 shadow-lg">
+          Main Semula 🔄
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Glossary Modal -->
+  <div id="glossaryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="wood-frame parchment-bg text-jebat-darkwood max-w-2xl w-full max-h-[85vh] rounded-2xl p-5 sm:p-7 flex flex-col relative shadow-2xl">
+      <div class="flex justify-between items-center border-b-2 border-amber-800/30 pb-3 mb-4">
+        <h2 class="font-title text-xl sm:text-2xl font-bold text-jebat-red flex items-center gap-2">
+          <i class="fa-solid fa-book-open text-amber-700"></i> Kamus Penjodoh Bilangan
+        </h2>
+        <button onclick="closeGlossary()" class="text-amber-900 hover:text-red-700 text-2xl font-bold px-2">
+          &times;
+        </button>
+      </div>
+
+      <div id="glossaryList" class="overflow-y-auto pr-2 space-y-3 text-sm sm:text-base">
+        <!-- Glossary Items populated by JS -->
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-amber-800/30 text-center">
+        <button onclick="closeGlossary()" class="bg-amber-800 text-jebat-gold font-bold px-6 py-2 rounded-xl border border-amber-900 hover:bg-amber-900 transition">
+          Tutup Kamus
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================================
+       DATA PENJODOH BILANGAN TAHUN 1 HINGGA TAHUN 6 (PELAJARAN KSSM/KBSR)
+       ======================================================================== */
+    const penjodohData = {
+      1: [ // Tahun 1 - Asas
+        { penjodoh: "sebatang", item: "pensel", emoji: "✏️", ayat: "Sebatang pensel digunakan untuk menulis." },
+        { penjodoh: "sebiji", item: "epal", emoji: "🍎", ayat: "Sebiji epal merah yang sangat manis." },
+        { penjodoh: "seekor", item: "kucing", emoji: "🐱", ayat: "Seekor kucing comel tidur di atas kerusi." },
+        { penjodoh: "sebuah", item: "kereta", emoji: "🚗", ayat: "Sebuah kereta merah meluncur laju." },
+        { penjodoh: "sehelai", item: "baju", emoji: "👕", ayat: "Sehelai baju kemeja yang bersih." },
+        { penjodoh: "sekuntum", item: "bunga", emoji: "🌹", ayat: "Sekuntum bunga mawar yang harum." }
+      ],
+      2: [ // Tahun 2 - Mudah
+        { penjodoh: "sekeping", item: "roti", emoji: "🍞", ayat: "Sekeping roti bakar untuk sarapan." },
+        { penjodoh: "sepucuk", item: "surat", emoji: "✉️", ayat: "Sepucuk surat dihantar kepada sahabat." },
+        { penjodoh: "sebilas", item: "keris", emoji: "🗡️", ayat: "Sebilas keris warisan Laksamana Jebat." },
+        { penjodoh: "seutas", item: "rantai", emoji: "📿", ayat: "Seutas rantai emas dipakaikan di leher." },
+        { penjodoh: "seketul", item: "batu", emoji: "🪨", ayat: "Seketul batu besar di tepi jalan." },
+        { penjodoh: "seulas", item: "durian", emoji: "🥭", ayat: "Seulas isi durian musang king." }
+      ],
+      3: [ // Tahun 3 - Sederhana
+        { penjodoh: "sebentuk", item: "cincin", emoji: "💍", ayat: "Sebentuk cincin permata bertatahkan zamrud." },
+        { penjodoh: "sekawan", item: "burung", emoji: "🕊️", ayat: "Sekawan burung terbang di udara." },
+        { penjodoh: "seumpun", item: "serai", emoji: "🌾", ayat: "Seumpun serai ditanam di belakang rumah." },
+        { penjodoh: "sepotong", item: "kek", emoji: "🍰", ayat: "Sepotong kek coklat di atas pinggan." },
+        { penjodoh: "seberkas", item: "kayu", emoji: "🪵", ayat: "Seberkas kayu api dikumpul di hutan." },
+        { penjodoh: "seumpun", item: "buluh", emoji: "🎋", ayat: "Seumpun buluh tumbuh dengan subur." }
+      ],
+      4: [ // Tahun 4 - Pertengahan
+        { penjodoh: "sebutir", item: "peluru", emoji: "🔮", ayat: "Sebutir mutiara berkilauan indah." },
+        { penjodoh: "serangkap", item: "pantun", emoji: "📜", ayat: "Serangkap pantun melayu dikarang pendekar." },
+        { penjodoh: "selaras", item: "senapang", emoji: "🔫", ayat: "Selaras senapang milik prajurit istana." },
+        { penjodoh: "seuntai", item: "anggur", emoji: "🍇", ayat: "Seuntai buah anggur yang segar." },
+        { penjodoh: "sekumpulan", item: "murid", emoji: "🧑‍🤝‍🧑", ayat: "Sekumpulan murid belajar bersama." },
+        { penjodoh: "sejambak", item: "bunga", emoji: "💐", ayat: "Sejambak bunga diberikan kepada ibu." }
+      ],
+      5: [ // Tahun 5 - Lanjutan
+        { penjodoh: "selembar", item: "kertas", emoji: "📄", ayat: "Selembar kertas warkah lama." },
+        { penjodoh: "sepucuk", item: "pistol", emoji: "🏹", ayat: "Sepucuk busur panah milik Jebat." },
+        { penjodoh: "serawan", item: "jala", emoji: "🕸️", ayat: "Serawan jala digunakan nelayan." },
+        { penjodoh: "seukir", item: "ukiran", emoji: "🖼️", ayat: "Seukir lukisan kayu klasik." },
+        { penjodoh: "sebidang", item: "tikar", emoji: "🧺", ayat: "Sebidang tikar mengkuang dibentang." },
+        { penjodoh: "segulung", item: "ijazah", emoji: "📜", ayat: "Segulung ijazah dicapai dengan tekun." }
+      ],
+      6: [ // Tahun 6 - Pahlawan Klasik
+        { penjodoh: "searas", item: "bangunan", emoji: "🏰", ayat: "Searas tingkat di dalam istana." },
+        { penjodoh: "sepapan", item: "petai", emoji: "🫛", ayat: "Sepapan petai dibeli di pasar." },
+        { penjodoh: "segugus", item: "kunci", emoji: "🔑", ayat: "Segugus kunci pintu gerbang kota." },
+        { penjodoh: "sepasal", item: "undang-undang", emoji: "⚖️", ayat: "Sepasal hukum dikanunkan oleh Sultan." },
+        { penjodoh: "seulas", item: "bawang", emoji: "🧄", ayat: "Seulas bawang putih ditumbuk halus." },
+        { penjodoh: "sejemput", item: "garam", emoji: "🧂", ayat: "Sejemput garam dimasukkan ke dalam gulai." }
+      ]
+    };
+
+    // Game State Variables
+    let currentGrade = 1;
+    let cardsArray = [];
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let moves = 0;
+    let matchedPairs = 0;
+    let isAudioEnabled = true;
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    // Web Audio API Synthesizer (Traditional SFX)
+    let audioCtx = null;
+
+    function initWebAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Play synthesized traditional gamelan/gong sound effects
+    function playSoundEffect(type) {
+      if (!isAudioEnabled) return;
+      initWebAudio();
+      if (!audioCtx) return;
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'flip') {
+        // Woody click
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.08);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } else if (type === 'match') {
+        // Traditional Gong Chime
+        [220, 440, 660].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+          gain.gain.setValueAtTime(0.2, now + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2 + idx * 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.05);
+          osc.stop(now + 1.3);
+        });
+      } else if (type === 'mismatch') {
+        // Low wooden thud
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.linearRampToValueAtTime(70, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'victory') {
+        // Grand Royal Malay Fanfare
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
+        notes.forEach((freq, i) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + i * 0.15);
+          gain.gain.setValueAtTime(0.3, now + i * 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.8);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + i * 0.15);
+          osc.stop(now + i * 0.15 + 0.8);
+        });
+      }
+    }
+
+    // Malay Speech Audio Output
+    function speakMalay(text) {
+      if (!isAudioEnabled || !('speechSynthesis' in window)) return;
+
+      window.speechSynthesis.cancel(); // Stop current speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ms-MY';
+      utterance.rate = 0.85; // Clear speed for children
+      utterance.pitch = 1.0;
+
+      // Try finding explicit ms-MY or id-ID voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const msVoice = voices.find(v => v.lang.includes('ms') || v.lang.includes('MY') || v.lang.includes('id'));
+      if (msVoice) {
+        utterance.voice = msVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Start and Update Timer
+    function startTimer() {
+      clearInterval(timerInterval);
+      secondsElapsed = 0;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+    }
+
+    // Prepare and Shuffle Cards
+    function setupCards() {
+      const data = penjodohData[currentGrade];
+      cardsArray = [];
+
+      data.forEach((item, index) => {
+        // Card Type 1: Penjodoh Bilangan Word
+        cardsArray.push({
+          id: index,
+          type: 'penjodoh',
+          text: item.penjodoh,
+          subtext: 'Penjodoh Bilangan',
+          speakText: item.penjodoh,
+          fullItem: item
+        });
+
+        // Card Type 2: Object Emoji + Name
+        cardsArray.push({
+          id: index,
+          type: 'object',
+          text: item.item,
+          emoji: item.emoji,
+          speakText: `${item.item}`,
+          fullItem: item
+        });
+      });
+
+      // Fisher-Yates Shuffle
+      for (let i = cardsArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cardsArray[i], cardsArray[j]] = [cardsArray[j], cardsArray[i]];
+      }
+    }
+
+    // Render Cards in Grid
+    function renderGrid() {
+      const grid = document.getElementById('gameGrid');
+      grid.innerHTML = '';
+
+      cardsArray.forEach((card, idx) => {
+        const cardElem = document.createElement('div');
+        cardElem.className = 'card-container h-28 sm:h-36 lg:h-40';
+        cardElem.dataset.index = idx;
+        cardElem.dataset.id = card.id;
+
+        const isPenjodoh = card.type === 'penjodoh';
+
+        cardElem.innerHTML = `
+          <div class="card-inner">
+            <!-- Front Face (Klasik Keris Motif) -->
+            <div class="card-front">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-jebat-gold/60 bg-jebat-darkwood flex items-center justify-center mb-1">
+                <i class="fa-solid fa-shield-halved text-jebat-gold text-lg sm:text-2xl"></i>
+              </div>
+              <span class="font-klasik text-xs sm:text-sm text-jebat-lightgold tracking-widest">JEBAT</span>
+            </div>
+
+            <!-- Back Face (Parchment with Word / Emoji) -->
+            <div class="card-back parchment-bg">
+              ${isPenjodoh ? `
+                <div class="text-xs sm:text-sm font-klasik text-amber-900 mb-1 uppercase tracking-wider">Penjodoh</div>
+                <div class="font-title font-black text-base sm:text-xl lg:text-2xl text-jebat-red gold-glow capitalize">${card.text}</div>
+              ` : `
+                <div class="text-3xl sm:text-5xl mb-1 filter drop-shadow-md">${card.emoji}</div>
+                <div class="font-title font-bold text-sm sm:text-lg text-amber-950 capitalize">${card.text}</div>
+              `}
+            </div>
+          </div>
+        `;
+
+        cardElem.addEventListener('click', () => handleCardClick(cardElem, card));
+        grid.appendChild(cardElem);
+      });
+
+      document.getElementById('matchScore').innerText = `0 / ${cardsArray.length / 2}`;
+    }
+
+    // Card Flip Logic
+    function handleCardClick(cardElem, cardData) {
+      if (lockBoard || cardElem.classList.contains('flipped') || cardElem.classList.contains('matched')) return;
+
+      initWebAudio();
+      playSoundEffect('flip');
+      cardElem.classList.add('flipped');
+
+      // Speak text aloud
+      speakMalay(cardData.speakText);
+
+      if (!firstCard) {
+        firstCard = { elem: cardElem, data: cardData };
+        return;
+      }
+
+      secondCard = { elem: cardElem, data: cardData };
+      moves++;
+      document.getElementById('moveCount').innerText = moves;
+
+      checkMatch();
+    }
+
+    // Check Match
+    function checkMatch() {
+      const isMatch = firstCard.data.id === secondCard.data.id;
+
+      if (isMatch) {
+        handleMatchedPairs();
+      } else {
+        handleMismatch();
+      }
+    }
+
+    function handleMatchedPairs() {
+      playSoundEffect('match');
+      firstCard.elem.classList.add('matched');
+      secondCard.elem.classList.add('matched');
+
+      // Speak praise and complete phrase
+      const matchedItem = firstCard.data.fullItem;
+      setTimeout(() => {
+        speakMalay(`${matchedItem.penjodoh} ${matchedItem.item}. Syabas, bijak!`);
+      }, 400);
+
+      matchedPairs++;
+      const totalPairs = cardsArray.length / 2;
+      document.getElementById('matchScore').innerText = `${matchedPairs} / ${totalPairs}`;
+
+      resetBoardState();
+
+      if (matchedPairs === totalPairs) {
+        stopTimer();
+        setTimeout(showVictory, 1200);
+      }
+    }
+
+    function handleMismatch() {
+      lockBoard = true;
+      setTimeout(() => {
+        playSoundEffect('mismatch');
+      }, 300);
+
+      setTimeout(() => {
+        if (firstCard) firstCard.elem.classList.remove('flipped');
+        if (secondCard) secondCard.elem.classList.remove('flipped');
+        resetBoardState();
+      }, 1200);
+    }
+
+    function resetBoardState() {
+      firstCard = null;
+      secondCard = null;
+      lockBoard = false;
+    }
+
+    // Show Victory Screen
+    function showVictory() {
+      playSoundEffect('victory');
+      
+      const gradeNames = ["Tahun 1 (Asas)", "Tahun 2 (Mudah)", "Tahun 3 (Sederhana)", "Tahun 4 (Pertengahan)", "Tahun 5 (Lanjutan)", "Tahun 6 (Pahlawan Klasik)"];
+      document.getElementById('modalGradeText').innerText = gradeNames[currentGrade - 1];
+      document.getElementById('modalMovesText').innerText = moves;
+      
+      const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('modalTimeText').innerText = `${mins}:${secs}`;
+
+      // Star calculation based on moves
+      let stars = "⭐⭐⭐";
+      if (moves > 12 && moves <= 18) stars = "⭐⭐";
+      else if (moves > 18) stars = "⭐";
+      document.getElementById('modalStarsText').innerText = stars;
+
+      document.getElementById('victoryModal').classList.remove('hidden');
+      speakMalay("Tahniah Pendekar! Anda telah menyelesaikan padanan dengan cemerlang!");
+    }
+
+    function closeVictoryModal() {
+      document.getElementById('victoryModal').classList.add('hidden');
+    }
+
+    function nextGrade() {
+      closeVictoryModal();
+      if (currentGrade < 6) {
+        currentGrade++;
+        document.getElementById('gradeSelect').value = currentGrade;
+      }
+      resetGame();
+    }
+
+    function changeGrade() {
+      currentGrade = parseInt(document.getElementById('gradeSelect').value);
+      resetGame();
+    }
+
+    function toggleAudio() {
+      isAudioEnabled = !isAudioEnabled;
+      const icon = document.getElementById('audioIcon');
+      const text = document.getElementById('audioText');
+      if (isAudioEnabled) {
+        icon.className = 'fa-solid fa-volume-high';
+        text.innerText = 'Suara: ON';
+        speakMalay("Suara diaktifkan");
+      } else {
+        icon.className = 'fa-solid fa-volume-xmark';
+        text.innerText = 'Suara: OFF';
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    // Glossary Kamus Functions
+    function openGlossary() {
+      const container = document.getElementById('glossaryList');
+      container.innerHTML = '';
+
+      const listData = penjodohData[currentGrade];
+      listData.forEach(item => {
+        const cardElem = document.createElement('div');
+        cardElem.className = 'bg-amber-100/90 border border-amber-800/30 rounded-xl p-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm';
+        cardElem.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">${item.emoji}</span>
+            <div>
+              <div class="font-title font-bold text-jebat-red text-base capitalize">
+                ${item.penjodoh} <span class="text-amber-900 font-sans">(${item.item})</span>
+              </div>
+              <p class="text-xs sm:text-sm text-amber-950 italic">"${item.ayat}"</p>
+            </div>
+          </div>
+          <button onclick="speakMalay('${item.penjodoh} ${item.item}. ${item.ayat}')" class="bg-amber-800 hover:bg-amber-900 text-jebat-gold px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 self-end sm:self-center">
+            <i class="fa-solid fa-volume-low"></i> Dengar
+          </button>
+        `;
+        container.appendChild(cardElem);
+      });
+
+      document.getElementById('glossaryModal').classList.remove('hidden');
+    }
+
+    function closeGlossary() {
+      document.getElementById('glossaryModal').classList.add('hidden');
+    }
+
+    // Main Game Reset
+    function resetGame() {
+      moves = 0;
+      matchedPairs = 0;
+      document.getElementById('moveCount').innerText = '0';
+      resetBoardState();
+      setupCards();
+      renderGrid();
+      startTimer();
+    }
+
+    // Initialize Game on Window Load
+    window.onload = () => {
+      resetGame();
+
+      // Pre-load Web Speech API voices
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          window.speechSynthesis.getVoices();
+        };
+      }
+    };
+  </script>
+</body>
+</html>
